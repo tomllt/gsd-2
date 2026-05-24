@@ -499,7 +499,10 @@ export function convertMessages(
 	const transformedMessages = transformMessagesWithReport(context.messages, model, (id) => normalizeToolCallId(id), "openai-completions");
 
 	if (context.systemPrompt) {
-		const useDeveloperRole = model.reasoning && compat.supportsDeveloperRole;
+		const useDeveloperRole =
+			model.provider !== "huoshan-openai" &&
+			model.reasoning &&
+			compat.supportsDeveloperRole;
 		const role = useDeveloperRole ? "developer" : "system";
 		params.push({ role: role, content: sanitizeSurrogates(context.systemPrompt) });
 	}

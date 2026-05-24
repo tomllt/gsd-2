@@ -651,9 +651,13 @@ export async function bootstrapAutoSession(
   // run /login" before pausing and resetting to claude-code/claude-sonnet-4-6.
   const manualSessionOverride = getSessionModelOverride(ctx.sessionManager.getSessionId());
   const sessionProviderIsCustom = isCustomProvider(ctx.model?.provider);
-  const preferredModel = sessionProviderIsCustom
-    ? null
-    : resolveDefaultSessionModel(ctx.model?.provider);
+  const rawPreferredModel = resolveDefaultSessionModel(ctx.model?.provider);
+  const preferredModel =
+    sessionProviderIsCustom &&
+    rawPreferredModel &&
+    !isCustomProvider(rawPreferredModel.provider)
+      ? null
+      : rawPreferredModel;
   // Validate the preferred model against the live registry + provider auth so
   // an unconfigured PREFERENCES.md entry (no API key / OAuth) can't become the
   // start-model snapshot. Without this, every subsequent unit would try to
